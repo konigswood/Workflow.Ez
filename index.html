@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Workspace - Kanban</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="app-header">
+        <h1>My Workspace</h1>
+        <div class="header-actions">
+            <!-- Tombol Tambah Utama (+ New Task) -->
+            <button id="open-modal-btn" class="btn-primary">➕ New Task</button>
+            <!-- Tombol Sakelar Tema -->
+            <button id="theme-toggle" class="btn-secondary">🌙 Dark Mode</button>
+        </div>
+    </header>
+
+    <!-- Modal Form (Popup Input Tugas Baru) -->
+    <div id="task-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Task</h2>
+                <button id="close-modal-btn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="task-input">Task / Document Title</label>
+                <input type="text" id="task-input" placeholder="e.g., Draft BAP Disiplin PNS...">
+
+                <label for="task-category">Category</label>
+                <select id="task-category">
+                    <option value="Letter">📄 Letter</option>
+                    <option value="Report">📊 Report</option>
+                    <option value="Notes">📝 Notes</option>
+                    <option value="Other">📌 Other</option>
+                </select>
+
+                <button id="add-btn" class="btn-submit">Create Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kanban Board Grid (4 Columns) -->
+    <main class="kanban-board">
+        
+        <!-- Column 1: To Do -->
+        <div class="kanban-column" id="col-todo">
+            <div class="column-header">
+                <h2>To Do</h2>
+                <span class="task-count" id="count-todo">0</span>
+            </div>
+            <div class="task-list" id="list-todo"></div>
+        </div>
+
+        <!-- Column 2: In Progress -->
+        <div class="kanban-column" id="col-progress">
+            <div class="column-header">
+                <h2>In Progress</h2>
+                <span class="task-count" id="count-progress">0</span>
+            </div>
+            <div class="task-list" id="list-progress"></div>
+        </div>
+
+        <!-- Column 3: In Review -->
+        <div class="kanban-column" id="col-review">
+            <div class="column-header">
+                <h2>In Review</h2>
+                <span class="task-count" id="count-review">0</span>
+            </div>
+            <div class="task-list" id="list-review"></div>
+        </div>
+
+        <!-- Column 4: Completed -->
+        <div class="kanban-column" id="col-completed">
+            <div class="column-header">
+                <h2>Completed</h2>
+                <span class="task-count" id="count-completed">0</span>
+            </div>
+            <div class="task-list" id="list-completed"></div>
+        </div>
+
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>

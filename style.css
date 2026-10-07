@@ -1,0 +1,277 @@
+/* --- RESET & BASE STYLES --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 24px;
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* --- HEADER STYLES --- */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #1e293b;
+}
+
+.app-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: #1e293b;
+    color: #f8fafc;
+    border: 1px solid #334155;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* --- KANBAN BOARD GRID (4 COLUMNS) --- */
+.kanban-board {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.kanban-column {
+    background-color: #1e293b;
+    border-radius: 10px;
+    padding: 16px;
+    min-height: 520px;
+    border: 1px solid #334155;
+}
+
+.column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #334155;
+}
+
+.column-header h2 {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.task-count {
+    background-color: #334155;
+    color: #94a3b8;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 400px;
+}
+
+/* --- TASK CARD STYLES --- */
+.task-card {
+    background-color: #0f172a;
+    border: 1px solid #334155;
+    padding: 12px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.card-category {
+    font-size: 11px;
+    font-weight: 600;
+    color: #60a5fa;
+    background-color: rgba(37, 99, 235, 0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+    width: fit-content;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: #f8fafc;
+}
+
+/* --- MODAL POPUP STYLES --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-overlay.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-body label {
+    font-size: 13px;
+    color: #94a3b8;
+}
+
+.modal-body input, .modal-body select {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    background-color: #0f172a;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.btn-submit {
+    margin-top: 10px;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- LIGHT MODE OVERRIDES --- */
+body.light-mode {
+    background-color: #f4f7fe;
+    color: #0f172a;
+}
+
+body.light-mode .app-header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+body.light-mode .kanban-column {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+body.light-mode .column-header {
+    border-bottom: 1px solid #e2e8f0;
+}
+
+body.light-mode .task-count {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+body.light-mode .task-card {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+}
+
+body.light-mode .card-title {
+    color: #0f172a;
+}
+
+body.light-mode .btn-secondary {
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+}
+
+body.light-mode .modal-content {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+}
+
+body.light-mode .modal-body input, 
+body.light-mode .modal-body select {
+    background-color: #f8fafc;
+    color: #0f172a;
+    border: 1px solid #cbd5e1;
+}
+
+/* --- DRAG AND DROP VISUAL EFFECTS --- */
+.task-card[draggable="true"] {
+    cursor: grab;
+}
+
+.task-card.dragging {
+    opacity: 0.4;
+    cursor: grabbing;
+    border: 2px dashed #3b82f6;
+}
+
+.task-list.drag-over {
+    background-color: rgba(59, 130, 246, 0.08);
+    border-radius: 8px;
+    border: 2px dashed #3b82f6;
+}
