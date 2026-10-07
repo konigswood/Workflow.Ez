@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Workspace - Kanban</title>
     <link rel="stylesheet" href="style.css">
+
+    <!-- Firebase App & Database Compat SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -16,6 +20,11 @@
             <button id="theme-toggle" class="btn-secondary">🌙 Dark Mode</button>
         </div>
     </header>
+
+    <!-- Banner Informasi Mode Viewer (Hanya muncul jika bukan Admin) -->
+    <div id="viewer-banner" style="display: none; background: #1e293b; color: #94a3b8; text-align: center; padding: 8px; font-size: 13px; border-bottom: 1px solid #334155;">
+        👀 <strong>Read-Only Mode:</strong> Anda melihat papan ini sebagai penonton. Perubahan yang dibuat pemilik akan ter-update secara otomatis.
+    </div>
 
     <!-- Modal Form (Popup Input Tugas Baru) -->
     <div id="task-modal" class="modal-overlay hidden">

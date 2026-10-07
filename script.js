@@ -1,27 +1,59 @@
-// 1. DOM Elements
+// 1. Firebase Setup
+const firebaseConfig = {
+    apiKey: "AIzaSyDMfXsIjG6AQjWKK8P28UcrwfR7iAljOxE",
+    authDomain: "workflow-ez.firebaseapp.com",
+    databaseURL: "https://workflow-ez-default-rtdb.firebaseio.com",
+    projectId: "workflow-ez",
+    storageBucket: "workflow-ez.firebasestorage.app",
+    messagingSenderId: "291689974901",
+    appId: "1:291689974901:web:d53098b43c563b56263c3c",
+    measurementId: "G-H0LDEDL98J"
+};
+
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// 2. Determine Mode (Admin vs Viewer via URL Parameter)
+const urlParams = new URLSearchParams(window.location.search);
+const isAdmin = urlParams.get('mode') === 'admin';
+
+// 3. DOM Elements
 const toggleBtn = document.getElementById('theme-toggle');
 const openModalBtn = document.getElementById('open-modal-btn');
 const closeModalBtn = document.getElementById('close-modal-btn');
 const taskModal = document.getElementById('task-modal');
+const viewerBanner = document.getElementById('viewer-banner');
 
 const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
 const taskCategory = document.getElementById('task-category');
-const taskLink = document.getElementById('task-link'); // Element link
+const taskLink = document.getElementById('task-link');
 
 const taskLists = document.querySelectorAll('.task-list');
 
-// 2. Load Tasks & Theme from LocalStorage on Startup
+// 4. Initialize UI based on Mode
 document.addEventListener('DOMContentLoaded', () => {
     loadTheme();
-    loadTasks();
+    setupModeAccess();
+    listenToFirebase();
 });
 
-// 3. Theme Switcher Logic
+function setupModeAccess() {
+    if (!isAdmin) {
+        // Mode Viewer
+        if (openModalBtn) openModalBtn.style.display = 'none';
+        if (viewerBanner) viewerBanner.style.display = 'block';
+    } else {
+        // Mode Admin
+        if (openModalBtn) openModalBtn.style.display = 'inline-block';
+        if (viewerBanner) viewerBanner.style.display = 'none';
+    }
+}
+
+// 5. Theme Switcher Logic
 if (toggleBtn) {
     toggleBtn.addEventListener('click', function() {
         document.body.classList.toggle('light-mode');
-
         const isLight = document.body.classList.contains('light-mode');
         toggleBtn.textContent = isLight ? '☀️ Light Mode' : '🌙 Dark Mode';
         localStorage.setItem('theme', isLight ? 'light' : 'dark');
@@ -36,8 +68,8 @@ function loadTheme() {
     }
 }
 
-// 4. Modal Controls
-if (openModalBtn && closeModalBtn && taskModal) {
+// 6. Modal Controls (Admin Only)
+if (isAdmin && openModalBtn && closeModalBtn && taskModal) {
     openModalBtn.addEventListener('click', function() {
         taskModal.classList.remove('hidden');
         setTimeout(() => taskInput.focus(), 50);
@@ -54,8 +86,8 @@ if (openModalBtn && closeModalBtn && taskModal) {
     });
 }
 
-// 5. Create Task Logic
-if (taskForm) {
+// 7. Create Task Logic (Admin Only)
+if (isAdmin && taskForm) {
     taskForm.addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -67,8 +99,7 @@ if (taskForm) {
             const card = createTaskCard(title, category, null, link);
             document.getElementById('list-todo').appendChild(card);
             
-            saveTasks();
-            updateTaskCounts();
+            saveTasksToFirebase();
 
             taskInput.value = '';
             if (taskLink) taskLink.value = '';
@@ -81,10 +112,13 @@ if (taskForm) {
 function createTaskCard(title, category, id = null, link = '') {
     const card = document.createElement('div');
     card.className = 'task-card';
-    card.setAttribute('draggable', 'true');
     card.id = id || 'task-' + Date.now();
     card.dataset.category = category;
     if (link) card.dataset.link = link;
+
+    if (isAdmin) {
+        card.setAttribute('draggable', 'true');
+    }
 
     let categoryIcon = '📌';
     if (category === 'Letter') categoryIcon = '📄';
@@ -92,80 +126,87 @@ function createTaskCard(title, category, id = null, link = '') {
     if (category === 'Notes') categoryIcon = '📝';
 
     const docBtnHtml = link ? `<a href="${link}" target="_blank" class="doc-link-btn" title="Open Google Docs" style="text-decoration: none; font-size: 13px; margin-right: 6px;">🔗 Docs</a>` : '';
+    const deleteBtnHtml = isAdmin ? `<button class="delete-btn" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding: 0 4px;">&times;</button>` : '';
 
     card.innerHTML = `
         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
             <span class="card-category">${categoryIcon} ${category}</span>
             <div style="display: flex; align-items: center;">
                 ${docBtnHtml}
-                <button class="delete-btn" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px; padding: 0 4px;">&times;</button>
+                ${deleteBtnHtml}
             </div>
         </div>
-        <p class="card-title" contenteditable="true" style="outline: none; margin-top: 6px;">${title}</p>
+        <p class="card-title" ${isAdmin ? 'contenteditable="true"' : ''} style="outline: none; margin-top: 6px;">${title}</p>
     `;
 
-    // Prevent drag when clicking link
+    // Stop drag when clicking docs link
     const docLink = card.querySelector('.doc-link-btn');
     if (docLink) {
         docLink.addEventListener('click', (e) => e.stopPropagation());
     }
 
-    // Delete Button Event
-    const deleteBtn = card.querySelector('.delete-btn');
-    deleteBtn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        card.remove();
-        saveTasks();
-        updateTaskCounts();
-    });
+    // Delete Button Event (Admin Only)
+    if (isAdmin) {
+        const deleteBtn = card.querySelector('.delete-btn');
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                card.remove();
+                saveTasksToFirebase();
+            });
+        }
 
-    // Auto Save Edit Title
-    const titleEl = card.querySelector('.card-title');
-    titleEl.addEventListener('blur', function() {
-        saveTasks();
-    });
+        // Auto Save on Title Edit
+        const titleEl = card.querySelector('.card-title');
+        titleEl.addEventListener('blur', function() {
+            saveTasksToFirebase();
+        });
 
-    // Drag & Drop Events
-    card.addEventListener('dragstart', function(e) {
-        card.classList.add('dragging');
-        e.dataTransfer.setData('text/plain', card.id);
-    });
+        // Drag & Drop Events
+        card.addEventListener('dragstart', function(e) {
+            card.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', card.id);
+        });
 
-    card.addEventListener('dragend', function() {
-        card.classList.remove('dragging');
-    });
+        card.addEventListener('dragend', function() {
+            card.classList.remove('dragging');
+        });
+    }
 
     return card;
 }
 
-// 6. Drag & Drop Logic
-taskLists.forEach(list => {
-    list.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        list.classList.add('drag-over');
+// 8. Drag & Drop Logic (Admin Only)
+if (isAdmin) {
+    taskLists.forEach(list => {
+        list.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            list.classList.add('drag-over');
+        });
+
+        list.addEventListener('dragleave', function() {
+            list.classList.remove('drag-over');
+        });
+
+        list.addEventListener('drop', function(e) {
+            e.preventDefault();
+            list.classList.remove('drag-over');
+
+            const cardId = e.dataTransfer.getData('text/plain');
+            const card = document.getElementById(cardId);
+
+            if (card) {
+                list.appendChild(card);
+                saveTasksToFirebase();
+            }
+        });
     });
+}
 
-    list.addEventListener('dragleave', function() {
-        list.classList.remove('drag-over');
-    });
+// 9. Firebase Realtime Database Sync Functions
+function saveTasksToFirebase() {
+    if (!isAdmin) return;
 
-    list.addEventListener('drop', function(e) {
-        e.preventDefault();
-        list.classList.remove('drag-over');
-
-        const cardId = e.dataTransfer.getData('text/plain');
-        const card = document.getElementById(cardId);
-
-        if (card) {
-            list.appendChild(card);
-            saveTasks();
-            updateTaskCounts();
-        }
-    });
-});
-
-// 7. LocalStorage Save & Load Functions
-function saveTasks() {
     const columns = ['todo', 'progress', 'review', 'completed'];
     const boardData = {};
 
@@ -186,29 +227,28 @@ function saveTasks() {
         });
     });
 
-    localStorage.setItem('kanbanBoardData', JSON.stringify(boardData));
+    database.ref('kanbanBoard').set(boardData);
 }
 
-function loadTasks() {
-    const savedData = localStorage.getItem('kanbanBoardData');
-    if (!savedData) return;
+function listenToFirebase() {
+    database.ref('kanbanBoard').on('value', (snapshot) => {
+        const boardData = snapshot.val();
+        const columns = ['todo', 'progress', 'review', 'completed'];
 
-    const boardData = JSON.parse(savedData);
-    const columns = ['todo', 'progress', 'review', 'completed'];
+        columns.forEach(col => {
+            const listEl = document.getElementById(`list-${col}`);
+            listEl.innerHTML = '';
 
-    columns.forEach(col => {
-        const listEl = document.getElementById(`list-${col}`);
-        listEl.innerHTML = '';
+            if (boardData && boardData[col]) {
+                boardData[col].forEach(task => {
+                    const card = createTaskCard(task.title, task.category, task.id, task.link);
+                    listEl.appendChild(card);
+                });
+            }
+        });
 
-        if (boardData[col]) {
-            boardData[col].forEach(task => {
-                const card = createTaskCard(task.title, task.category, task.id, task.link);
-                listEl.appendChild(card);
-            });
-        }
+        updateTaskCounts();
     });
-
-    updateTaskCounts();
 }
 
 // Helper: Update Counts
