@@ -12,9 +12,7 @@
     <header class="app-header">
         <h1>My Workspace</h1>
         <div class="header-actions">
-            <!-- Tombol Tambah Utama (+ New Task) -->
             <button id="open-modal-btn" class="btn-primary">➕ New Task</button>
-            <!-- Tombol Sakelar Tema -->
             <button id="theme-toggle" class="btn-secondary">🌙 Dark Mode</button>
         </div>
     </header>
@@ -26,9 +24,10 @@
                 <h2>Create New Task</h2>
                 <button id="close-modal-btn" class="close-btn">&times;</button>
             </div>
-            <div class="modal-body">
+            
+            <form id="task-form" class="modal-body">
                 <label for="task-input">Task / Document Title</label>
-                <input type="text" id="task-input" placeholder="e.g., Draft BAP Disiplin PNS...">
+                <input type="text" id="task-input" placeholder="e.g., Draft BAP Disiplin PNS..." required autocomplete="off">
 
                 <label for="task-category">Category</label>
                 <select id="task-category">
@@ -38,8 +37,12 @@
                     <option value="Other">📌 Other</option>
                 </select>
 
-                <button id="add-btn" class="btn-submit">Create Task</button>
-            </div>
+                <!-- Input Link Google Docs -->
+                <label for="task-link">Google Docs Link (Optional)</label>
+                <input type="url" id="task-link" placeholder="https://docs.google.com/document/d/..." autocomplete="off">
+
+                <button type="submit" id="add-btn" class="btn-submit">Create Task</button>
+            </form>
         </div>
     </div>
 
