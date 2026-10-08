@@ -2,7 +2,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyDMfXsIjG6AQjWKK8P28UcrwfR7iAljOxE",
     authDomain: "workflow-ez.firebaseapp.com",
-    databaseURL: "https://workflow-ez-default-rtdb.firebaseio.com",
+    databaseURL: "https://workflow-ez-default-rtdb.asia-southeast1.firebasedatabase.app",
     projectId: "workflow-ez",
     storageBucket: "workflow-ez.firebasestorage.app",
     messagingSenderId: "291689974901",
