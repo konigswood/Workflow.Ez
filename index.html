@@ -21,20 +21,22 @@
         </div>
     </header>
 
-    <!-- Banner Informasi Mode Viewer (Hanya muncul jika bukan Admin) -->
+    <!-- Banner Mode Viewer -->
     <div id="viewer-banner" style="display: none; background: #1e293b; color: #94a3b8; text-align: center; padding: 8px; font-size: 13px; border-bottom: 1px solid #334155;">
         👀 <strong>Read-Only Mode:</strong> Anda melihat papan ini sebagai penonton. Perubahan yang dibuat pemilik akan ter-update secara otomatis.
     </div>
 
-    <!-- Modal Form (Popup Input Tugas Baru) -->
+    <!-- Modal Form (Tambah / Edit Task) -->
     <div id="task-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Create New Task</h2>
+                <h2 id="modal-title">Create New Task</h2>
                 <button id="close-modal-btn" class="close-btn">&times;</button>
             </div>
             
             <form id="task-form" class="modal-body">
+                <input type="hidden" id="edit-task-id" value="">
+
                 <label for="task-input">Task / Document Title</label>
                 <input type="text" id="task-input" placeholder="e.g., Draft BAP Disiplin PNS..." required autocomplete="off">
 
@@ -46,19 +48,16 @@
                     <option value="Other">📌 Other</option>
                 </select>
 
-                <!-- Input Link Google Docs -->
                 <label for="task-link">Google Docs Link (Optional)</label>
                 <input type="url" id="task-link" placeholder="https://docs.google.com/document/d/..." autocomplete="off">
 
-                <button type="submit" id="add-btn" class="btn-submit">Create Task</button>
+                <button type="submit" id="add-btn" class="btn-submit">Save Task</button>
             </form>
         </div>
     </div>
 
-    <!-- Kanban Board Grid (4 Columns) -->
+    <!-- Kanban Board Grid -->
     <main class="kanban-board">
-        
-        <!-- Column 1: To Do -->
         <div class="kanban-column" id="col-todo">
             <div class="column-header">
                 <h2>To Do</h2>
@@ -67,7 +66,6 @@
             <div class="task-list" id="list-todo"></div>
         </div>
 
-        <!-- Column 2: In Progress -->
         <div class="kanban-column" id="col-progress">
             <div class="column-header">
                 <h2>In Progress</h2>
@@ -76,7 +74,6 @@
             <div class="task-list" id="list-progress"></div>
         </div>
 
-        <!-- Column 3: In Review -->
         <div class="kanban-column" id="col-review">
             <div class="column-header">
                 <h2>In Review</h2>
@@ -85,7 +82,6 @@
             <div class="task-list" id="list-review"></div>
         </div>
 
-        <!-- Column 4: Completed -->
         <div class="kanban-column" id="col-completed">
             <div class="column-header">
                 <h2>Completed</h2>
@@ -93,7 +89,6 @@
             </div>
             <div class="task-list" id="list-completed"></div>
         </div>
-
     </main>
 
     <script src="script.js"></script>
